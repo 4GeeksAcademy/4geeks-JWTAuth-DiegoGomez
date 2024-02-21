@@ -47,6 +47,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				//reset the global store
 				setStore({ demo: demo });
 			},
+			// Actualiza el estado global de la aplicación con el nuevo token de usuario
 			setUserToken: token => {
                 setStore({ user_token: token });
             }

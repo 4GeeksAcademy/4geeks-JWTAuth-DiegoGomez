@@ -4,30 +4,37 @@ import { useNavigate } from "react-router-dom";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    // Evita que el formulario se envíe automáticamente al presionar Enter
+    e.preventDefault(); 
 
     try {
+      // Envía una solicitud POST al backend para iniciar sesión
       const response = await fetch(process.env.BACKEND_URL + "/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        // Cuerpo de la solicitud con el correo electrónico y la contraseña
+        body: JSON.stringify({ email, password }), 
       });
 
       if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem("jwt-token", data.token);
-        navigate("/private");
+        // Extrae los datos de la respuesta
+        const data = await response.json(); 
+        // Almacena el token JWT en el almacenamiento local del navegador
+        localStorage.setItem("jwt-token", data.token); 
+        navigate("/private"); 
       } else {
-        const data = await response.json();
-        console.error("Login failed:", data.message);
+        // Si la respuesta no es exitosa, muestra un mensaje de error en la consola
+        const data = await response.json(); 
+        console.error("Login failed:", data.message); 
       }
     } catch (error) {
-      console.error("Error during login:", error);
+      // Muestra el error en la consola del navegador
+      console.error("Error during login:", error); 
     }
   };
 
@@ -45,7 +52,8 @@ const Login = () => {
                     className="form-control"
                     placeholder="Email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    // Actualiza el estado del correo electrónico al cambiar el valor del campo
+                    onChange={(e) => setEmail(e.target.value)} 
                     required
                   />
                 </div>
@@ -55,11 +63,12 @@ const Login = () => {
                     className="form-control"
                     placeholder="Password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    // Actualiza el estado de la contraseña al cambiar el valor del campo
+                    onChange={(e) => setPassword(e.target.value)} 
                     required
                   />
                 </div>
-                <button type="submit" className="btn btn-primary btn-block">Login</button>
+                <button type="submit" className="btn btn-primary btn-block">Login</button> {/* Botón para enviar el formulario de inicio de sesión */}
               </form>
             </div>
           </div>

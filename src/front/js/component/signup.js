@@ -9,30 +9,38 @@ const Signup = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    // Evita que el formulario se envíe automáticamente al presionar Enter
+    e.preventDefault(); 
 
     if (password !== confirmPass) {
-      alert("Las contraseñas no coinciden");
+      // Muestra una alerta si las contraseñas no coinciden
+      alert("Las contraseñas no coinciden"); 
       return;
     }
 
     try {
+      // Envía una solicitud POST al backend para registrarse
       const response = await fetch(process.env.BACKEND_URL + "/api/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          'Authorization': 'Bearer ' + localStorage.getItem('jwt-token')
+          // Incluye el token JWT en los headers de la solicitud
+          'Authorization': 'Bearer ' + localStorage.getItem('jwt-token') 
         },
-        body: JSON.stringify({ email, password }),
+        // Cuerpo de la solicitud con el correo electrónico y la contraseña
+        body: JSON.stringify({ email, password }), 
       });
 
       if (response.ok) {
+        // Si la respuesta es correcta (código de estado 200), redirige al usuario a la página de inicio de sesión
         navigate("/login");
       } else {
-        const data = await response.json();
+        // Extrae los datos de la respuesta para obtener el mensaje de error
+        const data = await response.json(); 
         console.error("Signup failed:", data.message);
       }
     } catch (error) {
+      // Manejo de errores en caso de problemas durante el registro
       console.error("Error during signup:", error);
     }
   };
@@ -51,7 +59,8 @@ const Signup = () => {
                     className="form-control"
                     placeholder="Email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    // Actualiza el estado del correo electrónico al cambiar el valor del campo
+                    onChange={(e) => setEmail(e.target.value)} 
                     required
                   />
                 </div>
@@ -61,7 +70,8 @@ const Signup = () => {
                     className="form-control"
                     placeholder="Password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    // Actualiza el estado de la contraseña al cambiar el valor del campo
+                    onChange={(e) => setPassword(e.target.value)} 
                     required
                   />
                 </div>
@@ -71,7 +81,8 @@ const Signup = () => {
                     className="form-control"
                     placeholder="Confirm Password"
                     value={confirmPass}
-                    onChange={(e) => setConfirmPass(e.target.value)}
+                    // Actualiza el estado de la confirmación de contraseña al cambiar el valor del campo
+                    onChange={(e) => setConfirmPass(e.target.value)} 
                     required
                   />
                 </div>
