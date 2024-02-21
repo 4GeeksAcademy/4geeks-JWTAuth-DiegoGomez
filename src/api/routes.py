@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, Blueprint
 from api.models import db, User
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+import itsdangerous
 
 api = Blueprint('api', __name__)
 

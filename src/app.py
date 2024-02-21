@@ -1,10 +1,12 @@
-from flask import Flask, send_from_directory
+from flask import Flask, send_from_directory, jsonify
 from flask_migrate import Migrate
 from flask_cors import CORS
 from api.routes import api
 from api.utils import APIException, generate_sitemap
 from api.models import db
 from flask_jwt_extended import JWTManager
+from itsdangerous import TimestampSigner
+import os
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -38,10 +40,12 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
+# Directorio de archivos estáticos
+static_file_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+
 @app.route('/<path:path>', methods=['GET'])
 def serve_any_other_file(path):
     return send_from_directory(static_file_dir, path)
-
 
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
