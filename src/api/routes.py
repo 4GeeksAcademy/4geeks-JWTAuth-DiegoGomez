@@ -1,11 +1,14 @@
 from flask import Flask, request, jsonify, Blueprint
 from api.models import db, User
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+import itsdangerous
 
 api = Blueprint('api', __name__)
 
-# No necesitas inicializar nuevamente Flask ni configurar JWTManager aquí
-# Flask y JWTManager ya deben estar inicializados en tu aplicación principal
+# Define una clave secreta para firmar los tokens JWT
+SECRET_KEY = 'your_secret_key_here'
+
+# Crea un objeto de firma usando la clave secreta
+signer = itsdangerous.TimestampSigner(SECRET_KEY)
 
 @api.route('/hello', methods=['POST', 'GET'])
 def handle_hello():
@@ -26,13 +29,6 @@ def sign_up():
     
     return jsonify([]), 200
 
-@api.route("/users", methods=["GET"])
-def get_users():
-    users = User.query.all()
-    users = list(map(lambda user: user.serialize(), users))
-    
-    return jsonify(users), 200
-
 @api.route("/login", methods=["POST"])
 def create_token():
     email = request.json.get("email", None)
@@ -42,13 +38,26 @@ def create_token():
     if user is None:
         return jsonify({"msg": "Bad username or password"}), 401
     
-    access_token = create_access_token(identity=user.id)
-    return jsonify({ "token": access_token, "user_id": user.id })
+    # Crea un token JWT firmado con la identidad del usuario
+    token = signer.sign(user.id)
+    return jsonify({ "token": token, "user_id": user.id })
 
 @api.route("/protected", methods=["GET"])
-@jwt_required()
 def protected():
-    current_user_id = get_jwt_identity()
-    user = User.query.get(current_user_id)
-    
-    return jsonify({"id": user.id, "email": user.email }), 200
+    # Obtiene el token del encabezado de autorización
+    token = request.headers.get('Authorization')
+    if not token:
+        return jsonify({"msg": "Missing Authorization header"}), 401
+
+    try:
+        # Verifica y decodifica el token
+        user_id = signer.unsign(token)
+        user = User.query.get(user_id)
+        return jsonify({"id": user.id, "email": user.email }), 200
+    except itsdangerous.BadSignature:
+        return jsonify({"msg": "Invalid token"}), 401
+
+if __name__ == '__main__':
+    app = Flask(__name__)
+    app.register_blueprint(api)
+    app.run()

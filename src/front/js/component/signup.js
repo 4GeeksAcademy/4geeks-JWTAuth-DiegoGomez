@@ -1,17 +1,18 @@
 import React, { useState } from "react";
-import  useHistory  from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (password !== confirmPass) {
-      alert("Las constraseñas no coinciden");
+      alert("Las contraseñas no coinciden");
       return;
     }
 
@@ -25,7 +26,7 @@ const Signup = () => {
       });
 
       if (response.ok) {
-        history.push("/login");
+        navigate("/login");
       } else {
         const data = await response.json();
         console.error("Signup failed:", data.message);

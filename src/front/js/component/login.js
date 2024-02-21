@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import  useHistory  from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,7 +21,7 @@ const Login = () => {
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem("jwt-token", data.token);
-        history.push("/protected");
+        navigate("/private");
       } else {
         const data = await response.json();
         console.error("Login failed:", data.message);
