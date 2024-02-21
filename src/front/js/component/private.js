@@ -12,7 +12,7 @@ const Private = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer " + localStorage.getItem("jwt-token")
+            Authorization: "Bearer " + localStorage.getItem("jwt-token") // Incluye el token JWT en los headers de la solicitud
           }
         });
 
