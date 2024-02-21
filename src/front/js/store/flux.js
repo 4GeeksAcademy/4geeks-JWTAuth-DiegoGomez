@@ -46,7 +46,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				//reset the global store
 				setStore({ demo: demo });
-			}
+			},
+			setUserToken: token => {
+                setStore({ user_token: token });
+            }
 		}
 	};
 };

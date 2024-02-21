@@ -1,26 +1,36 @@
-import React, { useContext } from "react";
-import { Context } from "../store/appContext";
-import rigoImageUrl from "../../img/rigo-baby.jpg";
+import React from "react";
+import { Link } from "react-router-dom";
 import "../../styles/home.css";
 
-export const Home = () => {
-	const { store, actions } = useContext(Context);
-
+const Home = () => {
 	return (
-		<div className="text-center mt-5">
-			<h1>Hello Rigo!!</h1>
-			<p>
-				<img src={rigoImageUrl} />
-			</p>
-			<div className="alert alert-info">
-				{store.message || "Loading message from the backend (make sure your python backend is running)..."}
+	  <div className="text-center mt-5 text-white">
+		<h1 className="display-5">Authentication JWT Diego Gomez</h1>
+		<div className="d-flex justify-content-center mt-3">
+		  <Link to="/signup" className="text-decoration-none">
+			<div className="card m-2" style={{ width: "18rem" }}>
+			  <div className="card-body">
+				<h5 className="card-title">Signup</h5>
+			  </div>
 			</div>
-			<p>
-				This boilerplate comes with lots of documentation:{" "}
-				<a href="https://start.4geeksacademy.com/starters/react-flask">
-					Read documentation
-				</a>
-			</p>
+		  </Link>
+		  <Link to="/login" className="text-decoration-none">
+			<div className="card m-2" style={{ width: "18rem" }}>
+			  <div className="card-body">
+				<h5 className="card-title">Login</h5>
+			  </div>
+			</div>
+		  </Link>
+		  <Link to="/private" className="text-decoration-none">
+			<div className="card m-2" style={{ width: "18rem" }}>
+			  <div className="card-body">
+				<h5 className="card-title">Private</h5>
+			  </div>
+			</div>
+		  </Link>
 		</div>
+	  </div>
 	);
-};
+  };
+  
+  export default Home;
