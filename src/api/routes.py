@@ -1,11 +1,11 @@
 from flask import Flask, request, jsonify, Blueprint
 from api.models import db, User
-import itsdangerous
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
 api = Blueprint('api', __name__)
 
 # Define una clave secreta para firmar los tokens JWT
-SECRET_KEY = 'your_secret_key_here'
+SECRET_KEY = 'from-diegoGG'
 
 # Crea un objeto de firma usando la clave secreta
 signer = itsdangerous.TimestampSigner(SECRET_KEY)
@@ -39,23 +39,17 @@ def create_token():
         return jsonify({"msg": "Bad username or password"}), 401
     
     # Crea un token JWT firmado con la identidad del usuario
-    token = signer.sign(user.id)
-    return jsonify({ "token": token, "user_id": user.id })
+    access_token = create_access_token(identity=user.id)
+    return jsonify({ "token": access_token, "user_id": user.id })
 
 @api.route("/protected", methods=["GET"])
+@jwt_required()  # Protege este endpoint con autenticación JWT
 def protected():
-    # Obtiene el token del encabezado de autorización
-    token = request.headers.get('Authorization')
-    if not token:
-        return jsonify({"msg": "Missing Authorization header"}), 401
-
-    try:
-        # Verifica y decodifica el token
-        user_id = signer.unsign(token)
-        user = User.query.get(user_id)
-        return jsonify({"id": user.id, "email": user.email }), 200
-    except itsdangerous.BadSignature:
-        return jsonify({"msg": "Invalid token"}), 401
+    # Obtiene la identidad del usuario autenticado
+    current_user_id = get_jwt_identity()
+    user = User.query.get(current_user_id)
+    
+    return jsonify({"id": user.id, "email": user.email }), 200
 
 if __name__ == '__main__':
     app = Flask(__name__)
