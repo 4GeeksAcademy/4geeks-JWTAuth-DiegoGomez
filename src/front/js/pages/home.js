@@ -1,36 +1,39 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../../styles/home.css";
 
-const Home = () => {
-	return (
-	  <div className="text-center mt-5 text-white">
-		<h1 className="display-5">Authentication JWT Diego Gomez</h1>
-		<div className="d-flex justify-content-center mt-3">
-		  <Link to="/signup" className="text-decoration-none">
-			<div className="card m-2" style={{ width: "18rem" }}>
-			  <div className="card-body">
-				<h5 className="card-title">Signup</h5>
-			  </div>
-			</div>
-		  </Link>
-		  <Link to="/login" className="text-decoration-none">
-			<div className="card m-2" style={{ width: "18rem" }}>
-			  <div className="card-body">
-				<h5 className="card-title">Login</h5>
-			  </div>
-			</div>
-		  </Link>
-		  <Link to="/private" className="text-decoration-none">
-			<div className="card m-2" style={{ width: "18rem" }}>
-			  <div className="card-body">
-				<h5 className="card-title">Private</h5>
-			  </div>
-			</div>
-		  </Link>
-		</div>
-	  </div>
-	);
-  };
-  
-  export default Home;
+export function Home() {
+    return (
+        <div className="container text-center">
+            <h1 className="display-2 text-warning mb-4">JWT Auth Diego Gomez</h1>
+            <div className="row justify-content-center">
+                <div className="col-md-4 mb-4">
+                    <div className="card">
+                        <div className="card-body">
+                            <h5 className="card-title">Signup</h5>
+                            <p className="card-text">Create a new account</p>
+                            <Link to="/signup" className="btn btn-primary">Go to Signup</Link>
+                        </div>
+                    </div>
+                </div>
+                <div className="col-md-4 mb-4">
+                    <div className="card">
+                        <div className="card-body">
+                            <h5 className="card-title">Login</h5>
+                            <p className="card-text">Login to your account</p>
+                            <Link to="/login" className="btn btn-primary">Go to Login</Link>
+                        </div>
+                    </div>
+                </div>
+                <div className="col-md-4 mb-4">
+                    <div className="card">
+                        <div className="card-body">
+                            <h5 className="card-title">Private</h5>
+                            <p className="card-text">Access your private dashboard</p>
+                            <Link to="/private" className="btn btn-primary">Go to Dashboard</Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}

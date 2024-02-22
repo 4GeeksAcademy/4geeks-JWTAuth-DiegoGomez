@@ -1,69 +1,72 @@
-from flask import Flask, request, jsonify, Blueprint
+from flask import request, jsonify, Blueprint
 from api.models import db, User
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-import itsdangerous
 
+# Crear un blueprint llamado 'api'
 api = Blueprint('api', __name__)
 
-# Define una clave secreta para firmar los tokens JWT
-SECRET_KEY = 'from-diegoGG'
-
-# Crea un objeto de firma usando la clave secreta
-signer = itsdangerous.TimestampSigner(SECRET_KEY)
-
-# Maneja la ruta '/hello' para métodos POST y GET
-@api.route('/hello', methods=['POST', 'GET'])
+# Endpoint para manejar la solicitud GET en '/hello'
+@api.route('/hello', methods=['GET'])
 def handle_hello():
+    # Crear el cuerpo de la respuesta
     response_body = {
         "message": "Hello! I'm a message that came from the backend"
     }
+    # Devolver la respuesta como JSON con un código de estado 200 (OK)
     return jsonify(response_body), 200
 
-# Maneja la ruta '/signup' para el método POST
-@api.route("/signup", methods=["POST"])
-def sign_up():
-    # Obtiene los datos del cuerpo de la solicitud JSON
-    email = request.json.get("email", None)
-    password = request.json.get("password", None)
-    is_active = request.json.get("is_active", None)
-    
-    # Crea un nuevo usuario con los datos proporcionados
-    user = User(email=email, password=password, is_active=is_active)
+# Endpoint para manejar la solicitud POST en '/register'
+@api.route('/register', methods=['POST'])
+def register():
+    # Obtener los datos JSON de la solicitud
+    data = request.get_json(silent=True)
+    # Crear un nuevo usuario con los datos proporcionados
+    user = User(email=data["email"], password=data["password"], is_active=True)  # Eliminar el uso de ph.hash
+    # Agregar el usuario a la base de datos
     db.session.add(user)
+    # Confirmar los cambios en la base de datos
     db.session.commit()
-    
-    return jsonify([]), 200
+    # Crear el cuerpo de la respuesta
+    response_body = {
+        "message": "User Created"
+    }
+    # Devolver una respuesta vacía con un código de estado 204 (No data)
+    return jsonify(response_body), 204
 
-# Maneja la ruta '/login' para el método POST
-@api.route("/login", methods=["POST"])
-def create_token():
-    # Obtiene los datos del cuerpo de la solicitud JSON
-    email = request.json.get("email", None)
-    password = request.json.get("password", None)
-    
-    # Busca al usuario en la base de datos
-    user = User.query.filter_by(email=email, password=password).first()
+# Endpoint para manejar la solicitud POST en '/login'
+@api.route('/login', methods=['POST'])
+def login():
+    # Obtener los datos JSON de la solicitud
+    data = request.get_json()
+    # Buscar al usuario en la base de datos por su dirección de correo electrónico
+    user = User.query.filter(User.email == data["email"]).first()
+    # Verificar si el usuario no existe
     if user is None:
-        # Si el usuario no existe, devuelve un mensaje de error
-        return jsonify({"msg": "Bad username or password"}), 401
+        # Devolver un mensaje de error con un código de estado 403 (Forbidden)
+        return jsonify({"message": "Invalid user"}), 403
     
-    # Crea un token JWT firmado con la identidad del usuario
-    access_token = create_access_token(identity=user.id)
+    # Verificar la contraseña proporcionada
+    if user.password != data["password"]:  # Eliminar el uso de ph.verify
+        # Devolver un mensaje de error con un código de estado 403 (Forbidden)
+        return jsonify({"message": "Invalid password"}), 403
+        
+    # Crear un token de acceso para el usuario autenticado
+    access_token = create_access_token(identity=user.id, additional_claims={"email": user.email})
+    # Devolver el token de acceso y el ID del usuario como JSON
     return jsonify({ "token": access_token, "user_id": user.id })
 
-# Maneja la ruta '/protected' para el método GET
-@api.route("/protected", methods=["GET"])
-@jwt_required()  # Protege este endpoint con autenticación JWT
-def protected():
-    # Obtiene la identidad del usuario autenticado a partir del token JWT
-    current_user_id = get_jwt_identity()
-    user = User.query.get(current_user_id)
-    
-    return jsonify({"id": user.id, "email": user.email }), 200
-
-# Punto de entrada principal de la aplicación
-if __name__ == '__main__':
-    app = Flask(__name__)
-    app.register_blueprint(api) 
-    # Inicia el servidor Flask
-    app.run() 
+# Endpoint para manejar la solicitud GET en '/userinfo'
+@api.route('/userinfo', methods=['GET'])
+# Proteger el endpoint con JWT (el usuario debe estar autenticado para acceder)
+@jwt_required()
+def userinfo():
+    # Obtener el ID del usuario autenticado del token JWT
+    userId = get_jwt_identity()
+    # Buscar al usuario en la base de datos por su ID
+    user = User.query.filter(User.id == userId).first()
+    # Crear el cuerpo de la respuesta con un mensaje de saludo que incluye el correo electrónico del usuario
+    response_body = {
+        "message": f"Hello {user.email}"
+    }
+    # Devolver el mensaje de saludo como JSON con un código de estado 200 (OK)
+    return jsonify(response_body), 200

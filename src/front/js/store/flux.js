@@ -2,55 +2,63 @@ const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
 			message: null,
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
+			logError: null,
+			token: null
 		},
 		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
+			// Función para obtener un mensaje desde el backend
+			getMessage: () => {
+				// Hacer una solicitud para obtener un mensaje desde el backend
+				fetch(process.env.BACKEND_URL + "/hello")
+					.then(resp => {
+						if (!resp.ok) {
+							throw new Error("Error loading message from backend");
+						}
+						return resp.json();
+					})
+					.then(data => setStore({ message: data.message }))
+					.catch(error => console.log(error));
 			},
 
-			getMessage: async () => {
-				try{
-					// fetching data from the backend
-					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
-					const data = await resp.json()
-					setStore({ message: data.message })
-					// don't forget to return something, that is how the async resolves
-					return data;
-				}catch(error){
-					console.log("Error loading message from backend", error)
-				}
+			// Función para registrar un usuario
+			signup: (email, password) => {
+				fetch(process.env.BACKEND_URL + "/signup", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({ email, password })
+				})
+					.then(resp => {
+						if (!resp.ok) {
+							throw new Error("register-error");
+						}
+						getActions().login(email, password);
+					})
+					.catch(error => setStore({ logError: error.message, token: null }));
 			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
 
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
-
-				//reset the global store
-				setStore({ demo: demo });
+			// Función para iniciar sesión de usuario
+			login: (email, password) => {
+				fetch(process.env.BACKEND_URL + "/login", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({ email, password })
+				})
+					.then(resp => {
+						if (!resp.ok) {
+							throw new Error("authentication-error");
+						}
+						return resp.json();
+					})
+					.then(data => setStore({ token: data.token, logError: null }))
+					.catch(error => setStore({ token: null, logError: error.message }));
 			},
-			// Actualiza el estado global de la aplicación con el nuevo token de usuario
-			setUserToken: token => {
-                setStore({ user_token: token });
-            }
+
+			// Función para cerrar sesión
+			logout: () => setStore({ token: null })
 		}
 	};
 };
