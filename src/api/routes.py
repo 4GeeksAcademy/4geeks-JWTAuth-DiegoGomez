@@ -1,10 +1,11 @@
 from flask import request, jsonify, Blueprint
 from api.models import db, User
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_cors import CORS
 
 # Crear un blueprint llamado 'api'
 api = Blueprint('api', __name__)
-
+CORS(api)
 # Endpoint para manejar la solicitud GET en '/hello'
 @api.route('/hello', methods=['GET'])
 def handle_hello():
@@ -19,7 +20,8 @@ def handle_hello():
 @api.route('/register', methods=['POST'])
 def register():
     # Obtener los datos JSON de la solicitud
-    data = request.get_json(silent=True)
+    data = request.get_json()
+    print(data)
     # Crear un nuevo usuario con los datos proporcionados
     user = User(email=data["email"], password=data["password"], is_active=True)  # Eliminar el uso de ph.hash
     # Agregar el usuario a la base de datos

@@ -22,7 +22,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			// Función para registrar un usuario
 			signup: (email, password) => {
-				fetch(process.env.BACKEND_URL + "/signup", {
+				fetch(process.env.BACKEND_URL + "/api/register", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json"
@@ -40,7 +40,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			// Función para iniciar sesión de usuario
 			login: (email, password) => {
-				fetch(process.env.BACKEND_URL + "/login", {
+				fetch(process.env.BACKEND_URL + "/api/login", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json"
