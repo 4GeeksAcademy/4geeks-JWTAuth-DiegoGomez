@@ -46,7 +46,7 @@ def login():
         return jsonify({"message": "Invalid user"}), 403
     
     # Verificar la contraseña proporcionada
-    if user.password != data["password"]:  # Eliminar el uso de ph.verify
+    if user.password != data["password"]: 
         # Devolver un mensaje de error con un código de estado 403 (Forbidden)
         return jsonify({"message": "Invalid password"}), 403
         

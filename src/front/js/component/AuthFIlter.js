@@ -1,14 +1,14 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; // Importa useNavigate en lugar de useHistory
+import { useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 
-export function SecurePage(props) {
+export function AuthFIlter(props) {
     const { store, actions } = React.useContext(Context);
-    const navigate = useNavigate(); // Usa useNavigate en lugar de useHistory
+    const navigate = useNavigate();
 
     React.useEffect(() => {
         if (!store.token) {
-            navigate("/login"); // Utiliza navigate para redirigir a "/login"
+            navigate("/login");
         }
     }, [store.token, navigate]);
 

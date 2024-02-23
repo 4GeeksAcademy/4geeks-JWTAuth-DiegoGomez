@@ -8,9 +8,7 @@ import injectContext from "./store/appContext";
 import { Signup } from "./pages/Signup";
 import { Login } from "./pages/Login";
 import { Private } from "./pages/Private";
-import { Navbar } from "./component/navbar";
-import { Footer } from "./component/footer";
-import { SecurePage } from "./component/AuthFIlter";
+import { AuthFIlter } from "./component/AuthFIlter";
 
 const Layout = () => {
     const basename = process.env.BASENAME || "";
@@ -23,7 +21,7 @@ const Layout = () => {
                         <Route path="/" element={<Home />} />
                         <Route path="/signup" element={<Signup />} />
                         <Route path="/login" element={<Login />} />
-                        <Route path="/private" element={<SecurePage><Private /></SecurePage>} />
+                        <Route path="/private" element={<AuthFIlter><Private /></AuthFIlter>} />
                         <Route path="*" element={<h1>Not found!</h1>} />
                     </Routes>
                 </ScrollToTop>
