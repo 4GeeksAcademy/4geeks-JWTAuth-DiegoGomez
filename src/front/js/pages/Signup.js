@@ -14,10 +14,14 @@ export function Signup() {
         }
     }, [store.token, navigate]);
 
+    const handleSignup = () => {
+        actions.signup(email, password);
+    };
+
     return (
         <div className="container d-flex justify-content-center align-items-center vh-100">
             <div className="w-50">
-                {store.logError && <div className="alert alert-danger">Error</div>}
+                {store.logError && <div className="alert alert-danger">{store.logError}</div>}
 
                 <h1 className="mb-4 text-white">Signup</h1>
 
@@ -44,7 +48,7 @@ export function Signup() {
                     />
                 </div>
                 <div className="d-flex justify-content-center mt-3">
-                    <button className="btn btn-primary me-2" onClick={() => actions.signup(email, password)}>
+                    <button className="btn btn-primary me-2" onClick={handleSignup}>
                         Register
                     </button>
                     <button className="btn btn-secondary" onClick={() => navigate("/")}>Go Back</button>

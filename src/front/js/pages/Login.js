@@ -14,10 +14,14 @@ export function Login() {
         }
     }, [store.token, navigate]);
 
+    const handleLogin = () => {
+        actions.login(email, password);
+    };
+
     return (
         <div className="container h-100 d-flex justify-content-center align-items-center">
             <div className="p-4">
-                {store.logError && <div className="alert alert-danger">Login Error</div>}
+                {store.logError && <div className="alert alert-danger">{store.logError}</div>}
 				<h1 className="mb-4 text-white">Login</h1>
                 <div className="input-group mb-3">
                     <span className="input-group-text" id="basic-addon1">Email</span>
@@ -42,7 +46,7 @@ export function Login() {
                     />
                 </div>
                 <div className="d-grid gap-2">
-                    <button className="btn btn-primary" onClick={() => actions.login(email, password)}>
+                    <button className="btn btn-primary" onClick={handleLogin}>
                         Login
                     </button>
                     <button className="btn btn-secondary" onClick={() => navigate("/")}>Go Back</button>

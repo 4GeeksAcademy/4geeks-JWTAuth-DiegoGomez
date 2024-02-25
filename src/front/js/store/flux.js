@@ -3,7 +3,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 		store: {
 			message: null,
 			logError: null,
-			token: null
+			//Guardar el token en el localStorage
+			token: localStorage.getItem("token")
 		},
 		actions: {
 			// Función para obtener un mensaje desde el backend
@@ -29,13 +30,18 @@ const getState = ({ getStore, getActions, setStore }) => {
 					},
 					body: JSON.stringify({ email, password })
 				})
-					.then(resp => {
-						if (!resp.ok) {
-							throw new Error("register-error");
-						}
-						getActions().login(email, password);
-					})
-					.catch(error => setStore({ logError: error.message, token: null }));
+				.then(resp => {
+					if (!resp.ok) {
+						throw new Error("register-error");
+					}
+					return resp.json();
+				})
+				.then(data => {
+					// Guardar token en localStorage al h
+					localStorage.setItem("token", data.token);
+					setStore({ token: data.token, logError: null });
+				})
+				.catch(error => setStore({ logError: error.message, token: null }));
 			},
 
 			// Función para iniciar sesión de usuario
@@ -47,18 +53,26 @@ const getState = ({ getStore, getActions, setStore }) => {
 					},
 					body: JSON.stringify({ email, password })
 				})
-					.then(resp => {
-						if (!resp.ok) {
-							throw new Error("authentication-error");
-						}
-						return resp.json();
-					})
-					.then(data => setStore({ token: data.token, logError: null }))
-					.catch(error => setStore({ token: null, logError: error.message }));
+				.then(resp => {
+					if (!resp.ok) {
+						throw new Error("authentication-error");
+					}
+					return resp.json();
+				})
+				.then(data => {
+					// Guardar token en localStorage
+					localStorage.setItem("token", data.token);
+					setStore({ token: data.token, logError: null });
+				})
+				.catch(error => setStore({ token: null, logError: error.message }));
 			},
 
 			// Función para cerrar sesión
-			logout: () => setStore({ token: null })
+			logout: () => {
+				// Eliminar el token al cerrar sesión
+				localStorage.removeItem("token");
+				setStore({ token: null });
+			}
 		}
 	};
 };
