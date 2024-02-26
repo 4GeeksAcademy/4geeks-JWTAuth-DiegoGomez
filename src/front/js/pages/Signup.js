@@ -17,7 +17,7 @@ export function Signup() {
     const handleSignup = async () => {
         try {
             await actions.signup(email, password);
-            navigate("/");
+            navigate("/login");
         } catch (error) {
             console.error("Error during signup:", error);
         }
