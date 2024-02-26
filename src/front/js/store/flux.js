@@ -31,18 +31,23 @@ const getState = ({ getStore, getActions, setStore }) => {
 					body: JSON.stringify({ email, password })
 				})
 				.then(resp => {
-					if (!resp.ok) {
+					if (resp.status === 204) {
+						setStore({ logError: null });
+					} else if (!resp.ok) {
 						throw new Error("register-error");
+					} else {
+						return resp.json();
 					}
-					return resp.json();
 				})
 				.then(data => {
-					// Guardar token en localStorage al h
-					localStorage.setItem("token", data.token);
-					setStore({ token: data.token, logError: null });
+					if (data && data.token) {
+						localStorage.setItem("token", data.token);
+						setStore({ token: data.token, logError: null });
+					}
 				})
 				.catch(error => setStore({ logError: error.message, token: null }));
-			},
+			},			
+			
 
 			// Función para iniciar sesión de usuario
 			login: (email, password) => {

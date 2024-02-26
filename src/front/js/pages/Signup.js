@@ -14,8 +14,13 @@ export function Signup() {
         }
     }, [store.token, navigate]);
 
-    const handleSignup = () => {
-        actions.signup(email, password);
+    const handleSignup = async () => {
+        try {
+            await actions.signup(email, password);
+            navigate("/");
+        } catch (error) {
+            console.error("Error during signup:", error);
+        }
     };
 
     return (
